@@ -13,6 +13,8 @@ def cli(image_name, port):
     app_type = identify_app_type()
     click.echo(app_type + ' app detected')
 
+    python_entrypoint_file = 'app.py'
+
     #Generate Dockerfile
     click.echo('Generating Dockerfile...')
     if (app_type == 'JAVA_SPRING_BOOT'):
@@ -32,6 +34,12 @@ def cli(image_name, port):
             exit(1)
             click.echo('here in 33')
         text = pkgutil.get_data(__name__, "templates/Java.Dockerfile").decode()
+
+    elif (app_type == 'PYTHON_FLASK'):
+        python_entrypoint_file = click.prompt('Enter python entrypoint file')
+        os.environ["FLASK_ENTRYPOINT_FILE"] = python_entrypoint_file
+        text = pkgutil.get_data(__name__, "templates/Python-Flask.Dockerfile").decode()
+
     open("Dockerfile", "w").writelines([l for l in text])
     click.echo('Dockerfile generated')
 
@@ -39,10 +47,12 @@ def cli(image_name, port):
     if (port == -1):
         if (app_type == 'JAVA_SPRING_BOOT'):
             port = 8080
+        if (app_type == 'PYTHON_FLASK'):
+            port = 5000
 
     #Build Docker image
     click.echo('Building Docker image...')
-    os.system('docker build -t {} .'.format(image_name))
+    os.system('docker build -t {} --build-arg FLASK_ENTRYPOINT_FILE={} .'.format(image_name, python_entrypoint_file))
     click.echo('Built image {}'.format(image_name))
 
     #Run Docker image
@@ -51,7 +61,8 @@ def cli(image_name, port):
 
 def identify_app_type():
     """Identify the project language to build Dockerfile"""
-    return 'JAVA_SPRING_BOOT'
+    #return 'JAVA_SPRING_BOOT'
+    return 'PYTHON_FLASK'
 
 # if __name__ == '__main__':
 #     # Identify app type
