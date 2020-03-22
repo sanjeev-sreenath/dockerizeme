@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='dockerizeme',
-    version='0.1',
+    version='0.1.4',
     packages=find_packages(),
     py_modules=['dockerizeme'],
     description ='Generate Dockerfile for your project automatically',
