@@ -13,6 +13,10 @@ def cli(image_name, port):
     app_type = identify_app_type()
     click.echo(app_type + ' app detected')
 
+    if(app_type == 'NODE_JS'):
+        handle_nodejs(image_name)
+        return
+
     python_entrypoint_file = 'app.py'
 
     #Generate Dockerfile
@@ -59,10 +63,29 @@ def cli(image_name, port):
     click.echo('Running Docker image...')
     os.system('docker run -p {}:{} {}'.format(port, port, image_name))
 
+def handle_nodejs(image_name):
+    # Generate Dockerfile
+    click.echo('Generating Dockerfile...')
+    text = pkgutil.get_data(__name__, "templates/NodeJS.Dockerfile").decode()
+    open("Dockerfile", "w").writelines([l for l in text])
+    click.echo('Dockerfile generated')
+    port = 8080
+
+    # Build Docker image
+    click.echo('Building Docker image...')
+    os.system('docker build -t {} .'.format(image_name))
+    click.echo('Built image {}'.format(image_name))
+
+    # Run Docker image
+    click.echo('Running Docker image...')
+    os.system('docker run -it -p {}:{} {}'.format(port, port, image_name))
+
+
 def identify_app_type():
     """Identify the project language to build Dockerfile"""
-    #return 'JAVA_SPRING_BOOT'
-    return 'PYTHON_FLASK'
+    # return 'JAVA_SPRING_BOOT'
+    # return 'PYTHON_FLASK'
+    return 'NODE_JS'
 
 # if __name__ == '__main__':
 #     # Identify app type
