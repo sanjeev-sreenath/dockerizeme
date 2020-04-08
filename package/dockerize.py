@@ -3,9 +3,11 @@ import pkgutil
 import os
 import re
 
-@click.option('--image-name', default='dockerized-app', help='Image name to use for build.')
-@click.option('--port', type=int, default=-1, help='The port to run the image on.')
-@click.option('--app-type', required=True, help='The type of app(FLASK, NODE_JS, SPRING_BOOT).')
+@click.option('--image-name', default='dockerized-app', help='The image name and optionally a tag in the ‘name:tag’ '
+                                                             'format.')
+@click.option('--port', type=int, default=-1, help='The port on which your application has been configured to run. '
+                                                   '(Your application will be exposed on the same port.)')
+@click.option('--app-type', required=True, help='The type of app (FLASK, NODE_JS, SPRING_BOOT).')
 @click.command()
 def cli(image_name, port, app_type):
     """Main cli"""
@@ -49,7 +51,7 @@ def handle_java_spring_boot(image_name, port):
 
     # Run Docker image
     click.echo('Running Docker image...')
-    os.system('docker run -p {}:{} {}'.format(8080, port, image_name))
+    os.system('docker run -it -p {}:{} {}'.format(port, port, image_name))
 
 def handle_python_flask(image_name, port):
     python_entrypoint_file = 'app.py'
@@ -70,7 +72,7 @@ def handle_python_flask(image_name, port):
 
     # Run Docker image
     click.echo('Running Docker image...')
-    os.system('docker run -p {}:{} {}'.format(5000, port, image_name))
+    os.system('docker run -it -p {}:{} {}'.format(port, port, image_name))
 
 def handle_nodejs(image_name, port):
     # Generate Dockerfile
@@ -86,4 +88,4 @@ def handle_nodejs(image_name, port):
 
     # Run Docker image
     click.echo('Running Docker image...')
-    os.system('docker run -it -p {}:{} {}'.format(8080, port, image_name))
+    os.system('docker run -it -p {}:{} {}'.format(port, port, image_name))
