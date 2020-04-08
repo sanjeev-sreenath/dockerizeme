@@ -5,25 +5,22 @@ import re
 
 @click.option('--image-name', default='dockerized-app', help='Image name to use for build.')
 @click.option('--port', type=int, default=-1, help='The port to run the image on.')
-@click.option('--app_type', required=True, help='The type of app(PYTHON_FLASK, NODE_JS, JAVA_SPRING_BOOT).')
+@click.option('--app-type', required=True, help='The type of app(FLASK, NODE_JS, SPRING_BOOT).')
 @click.command()
 def cli(image_name, port, app_type):
     """Main cli"""
-
-    click.echo(app_type + ' app detected')
-
     # Port was not passed in argument, set default values based on app_type
     if (port == -1):
-        if (app_type == 'PYTHON_FLASK'):
+        if (app_type == 'FLASK'):
             port = 5000
         else:
             port = 8080
 
     if(app_type == 'NODE_JS'):
         handle_nodejs(image_name, port)
-    elif(app_type == 'JAVA_SPRING_BOOT'):
+    elif(app_type == 'SPRING_BOOT'):
         handle_java_spring_boot(image_name, port)
-    elif(app_type == 'PYTHON_FLASK'):
+    elif(app_type == 'FLASK'):
         handle_python_flask(image_name, port)
 
 def handle_java_spring_boot(image_name, port):
